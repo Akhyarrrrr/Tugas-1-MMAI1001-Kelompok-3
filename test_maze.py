@@ -195,6 +195,20 @@ class VercelApiTest(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.get_json()["minimumSteps"], 17)
 
+    def test_serves_frontend_and_favicon(self) -> None:
+        page = self.client.get("/")
+        try:
+            self.assertEqual(page.status_code, 200)
+            self.assertIn(b"Maze BFS Studio", page.data)
+        finally:
+            page.close()
+        icon = self.client.get("/favicon.svg")
+        try:
+            self.assertEqual(icon.status_code, 200)
+            self.assertEqual(icon.mimetype, "image/svg+xml")
+        finally:
+            icon.close()
+
     def test_parse_and_invalid_payload(self) -> None:
         parsed = self.client.post("/api/parse", json={"text": textwrap.dedent(SAMPLE_2).strip()})
         self.assertEqual(parsed.status_code, 200)

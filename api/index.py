@@ -8,13 +8,18 @@ from maze import parse_maze_text, read_maze, search_maze, validate_maze_data
 
 
 ROOT = Path(__file__).resolve().parent.parent
-app = Flask(__name__)
+app = Flask(__name__, static_folder=str(ROOT / "web"), static_url_path="")
 app.config["MAX_CONTENT_LENGTH"] = 128 * 1024
 
 
 @app.errorhandler(413)
 def request_too_large(_error):
     return jsonify(error="request terlalu besar"), 413
+
+
+@app.get("/")
+def index():
+    return app.send_static_file("index.html")
 
 
 @app.get("/api/maze")

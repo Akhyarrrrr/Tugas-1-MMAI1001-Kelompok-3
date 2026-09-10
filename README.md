@@ -5,6 +5,8 @@ Maze BFS Studio adalah aplikasi interaktif untuk memvisualisasikan **Breadth Fir
 **Dibuat oleh:** Akhyar — 260820701100010  
 **Mata kuliah:** Kecerdasan Artifisial (MMAI1001)
 
+**Demo online:** [maze-bfs-studio.vercel.app](https://maze-bfs-studio.vercel.app)
+
 ## Fitur
 
 - Editor maze dengan mode dinding, jalan, dan titik mulai.
@@ -78,7 +80,7 @@ python -m unittest -v
 ```text
 maze.py              Algoritma BFS, parsing, dan validasi utama
 app.py               Server lokal berbasis standard library
-api/index.py         Adapter Flask untuk Python Functions Vercel
+api/index.py         Adapter Flask untuk frontend dan Python Functions Vercel
 maze.txt             Contoh resmi dengan hasil 17
 web/                  HTML, CSS, JavaScript, dan favicon
 test_maze.py          Pengujian algoritma, server lokal, dan Vercel
@@ -89,16 +91,13 @@ vercel.json           Konfigurasi hosting frontend dan Python Function
 
 ## Menyiapkan GitHub
 
-Repository lokal sudah diinisialisasi pada branch `main`, tetapi belum di-stage, commit, atau push. Setelah membuat repository kosong di GitHub, jalankan:
+Repository resmi tersedia di [github.com/Akhyarrrrr/Maze-BFS-Studio](https://github.com/Akhyarrrrr/Maze-BFS-Studio). Untuk mengirim perubahan berikutnya, jalankan:
 
 ```powershell
 git add .
-git commit -m "feat: build interactive BFS maze studio"
-git remote add origin https://github.com/USERNAME/maze-bfs-studio.git
-git push -u origin main
+git commit -m "jelaskan perubahan"
+git push
 ```
-
-Ganti `USERNAME` dan nama repository sesuai akun GitHub. Jangan centang pembuatan README atau `.gitignore` baru di GitHub karena keduanya sudah tersedia di proyek ini.
 
 ## Menayangkan di Vercel
 
@@ -106,11 +105,12 @@ GitHub menyimpan kode, sedangkan Vercel menjalankan frontend dan API Python. Git
 
 ### Melalui dashboard
 
-1. Push proyek ke GitHub.
-2. Buka Vercel dan pilih **Add New → Project**.
-3. Impor repository `maze-bfs-studio`.
-4. Biarkan root directory pada folder utama repository.
-5. Vercel membaca `vercel.json` dan `requirements.txt`; pilih **Deploy**.
+Repository GitHub sudah terhubung ke project Vercel `maze-bfs-studio`. Setiap push ke `main` memicu production deployment. Untuk menghubungkan ulang secara manual:
+
+1. Buka Vercel dan pilih **Add New → Project**.
+2. Impor repository `Maze-BFS-Studio`.
+3. Biarkan root directory pada folder utama repository.
+4. Vercel membaca `vercel.json` dan `requirements.txt`; pilih **Deploy**.
 
 ### Melalui CLI
 
