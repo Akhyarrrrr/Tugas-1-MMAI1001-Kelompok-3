@@ -1,135 +1,74 @@
-# Maze BFS Studio
+# Shortest Path Studio
 
-Maze BFS Studio adalah aplikasi interaktif untuk memvisualisasikan **Breadth First Search (BFS)** pada maze. Aplikasi membaca format tugas resmi, memperlihatkan antrean FIFO dan urutan kunjungan, lalu menampilkan lintasan keluar terpendek.
+Program Tugas 1 MMAI1001 ini membaca graf berbobot dari `graf.txt`, mencari jalur terpendek dengan **Dijkstra** dan **Bellman–Ford**, lalu membandingkan jalur, bobot minimum, dan waktu running. GUI Tkinter menampilkan graf dan perkembangan pencarian secara bertahap.
 
-**Dibuat oleh:** Akhyar — 260820701100010  
-**Mata kuliah:** Kecerdasan Artifisial (MMAI1001)
+**Anggota kelompok:** Akhyar (260820701100010), Ahmad Faqih Al Ghifari (260820701100005), dan Attar Rayyan Muhammad (260820701100011).
 
-**Demo online:** [maze-bfs-studio.vercel.app](https://maze-bfs-studio.vercel.app)
+> **Sebelum dikumpulkan:** nomor kelompok belum ditetapkan. Ganti huruf `X` pada `MMAIKelompokX.py` serta sampul laporan dan slide dengan nomor resmi. Nama anggota di atas adalah identitas yang diberikan kelompok.
 
-## Fitur
+## Menjalankan
 
-- Editor maze dengan mode dinding, jalan, dan titik mulai.
-- Animasi BFS dengan play, pause, langkah maju/mundur, timeline, dan pengaturan kecepatan.
-- Inspector untuk petak aktif, jarak, jumlah petak ditemukan, dan isi frontier queue.
-- Generator maze acak yang selalu memiliki sedikitnya satu jalan keluar.
-- Impor dan ekspor `maze.txt` sesuai format tugas.
-- Validasi input serta tampilan responsif dan aksesibel.
-- CLI resmi yang tetap mencetak satu bilangan hasil.
-
-## Menjalankan aplikasi
-
-### Cara termudah di Windows
-
-Klik dua kali **`Jalankan Aplikasi.bat`**. Terminal akan menampilkan alamat lokal dan browser terbuka otomatis. Tutup terminal atau tekan `Ctrl+C` untuk menghentikan server.
-
-### Melalui terminal
-
-Syarat: Python 3.10 atau lebih baru.
+Gunakan Python 3.10 atau lebih baru dengan Tkinter. Pada Windows, klik dua kali `Jalankan Aplikasi.bat`, atau jalankan dari terminal:
 
 ```powershell
-python app.py
+python MMAIKelompokX.py
 ```
 
-Browser akan membuka aplikasi pada alamat `http://127.0.0.1:<port>`. Port dipilih otomatis agar tidak bentrok dengan aplikasi lain.
-
-Untuk menjalankan solusi tugas versi CLI:
+Tidak ada paket Python tambahan untuk menjalankan program. Jika Tkinter tidak tersedia pada instalasi Linux, pasang paket Tkinter yang sesuai distribusi Python Anda. Mode teks tetap dapat berjalan tanpa layar atau Tkinter:
 
 ```powershell
-python maze.py
-```
-
-Dengan `maze.txt` bawaan, keluarannya tepat:
-
-```text
-17
-```
-
-> Jangan membuka `web/index.html` langsung. Frontend memerlukan API Python dari `app.py`.
-
-## Format `maze.txt`
-
-```text
-N M
-baris maze ke-1
-...
-baris maze ke-N
-A B
-```
-
-- `N M`: jumlah baris dan kolom.
-- Setiap sel hanya boleh bernilai `-1` (dinding) atau `0` (jalan).
-- `A B`: koordinat awal berbasis 1, sesuai format soal.
-- Gerakan hanya atas, bawah, kiri, dan kanan.
-- Jumlah langkah mencakup petak awal dan petak keluar.
-- Program menghasilkan `-1` bila tidak ada exit batas yang dapat dicapai.
-
-## Pengujian
-
-Adapter Vercel memakai Flask. Instal dependensi hanya jika ingin menjalankan seluruh test atau build Vercel; aplikasi lokal dan CLI tetap menggunakan pustaka standar Python.
-
-```powershell
-python -m pip install -r requirements.txt
-python -m py_compile maze.py app.py api/index.py test_maze.py
-node --check web/app.js
+python MMAIKelompokX.py --cli
+python MMAIKelompokX.py --cli contoh/graf_BH.txt
+python MMAIKelompokX.py --benchmark --repetitions 1000
 python -m unittest -v
 ```
 
-## Arsitektur
+File argumen opsional dapat memakai path absolut atau relatif terhadap terminal. Tanpa argumen, program membaca `graf.txt` di folder yang sama dengan berkas utama, sehingga dapat dibuka dari direktori lain.
+
+## Format file graf
+
+Isi file berupa satu dictionary literal Python bernama `graph` atau `graf`, diikuti baris terakhir berisi simpul awal dan akhir yang dipisahkan spasi:
 
 ```text
-maze.py              Algoritma BFS, parsing, dan validasi utama
-app.py               Server lokal berbasis standard library
-api/index.py         Adapter Flask untuk frontend dan Python Functions Vercel
-maze.txt             Contoh resmi dengan hasil 17
-web/                  HTML, CSS, JavaScript, dan favicon
-test_maze.py          Pengujian algoritma, server lokal, dan Vercel
-vercel.json           Konfigurasi hosting frontend dan Python Function
+graph = {
+    'A': {'B': 4, 'C': 2},
+    'B': {'A': 4},
+    'C': {},
+}
+A C
 ```
 
-`maze.py` adalah satu-satunya sumber kebenaran algoritma. Server lokal dan Vercel hanya menerjemahkan request HTTP ke fungsi yang sama, sehingga hasil web dan CLI tetap konsisten.
+Setiap sisi mengikuti arah yang tertulis. Jika arah balik diperlukan, tuliskan secara eksplisit pada daftar tetangga simpul balik. Semua simpul tujuan harus punya entri dictionary sendiri. Bobot boleh berupa bilangan bulat atau desimal terhingga. Program membaca file sebagai data literal dan tidak mengeksekusi kode di dalamnya.
 
-## Menyiapkan GitHub
+Untuk graf berbobot nonnegatif, kedua algoritma dijalankan. Jika ada bobot negatif, hanya Bellman–Ford yang berlaku. Program melaporkan kesalahan bila siklus negatif yang dapat dicapai dari awal juga dapat menuju tujuan. Jika tujuan tak terjangkau, jalur dan bobot ditampilkan sebagai tidak ada.
 
-Repository resmi tersedia di [github.com/Akhyarrrrr/Maze-BFS-Studio](https://github.com/Akhyarrrrr/Maze-BFS-Studio). Untuk mengirim perubahan berikutnya, jalankan:
+## Menggunakan GUI
 
-```powershell
-git add .
-git commit -m "jelaskan perubahan"
-git push
-```
+1. Buka aplikasi. Contoh resmi `graf.txt` langsung dimuat.
+2. Pilih simpul **Awal** dan **Akhir**, kemudian tekan **Jalankan kedua algoritma**. File yang berbeda dapat dibuka dengan **Buka graf.txt**.
+3. Bandingkan hasil pada panel kanan. Pilih algoritma pada **Proses yang ditampilkan**.
+4. Gunakan **Putar/Jeda**, tombol langkah, bilah kemajuan, dan pilihan kecepatan. Jalur akhir berwarna kuning. Simpul dapat diseret agar gambar lebih mudah dibaca.
 
-## Menayangkan di Vercel
+Waktu yang ditampilkan adalah durasi fungsi pencarian menggunakan `perf_counter_ns()`, dinyatakan dalam mikrodetik. Pembuatan animasi dan penggambaran GUI tidak termasuk. Angka waktu dapat berubah antar mesin dan antar percobaan; `--benchmark` menampilkan median dari jumlah percobaan yang dipilih.
 
-GitHub menyimpan kode, sedangkan Vercel menjalankan frontend dan API Python. GitHub Pages tidak cocok untuk versi ini karena hanya menyediakan hosting statis dan tidak menjalankan Python server-side.
+## Hasil contoh dosen
 
-### Melalui dashboard
+| Awal–akhir | Jalur minimum | Bobot |
+|---|---|---:|
+| V1–V15 | V1 → V2 → V5 → V9 → V12 → V15 | 505 |
+| V1–V10 | V1 → V4 → V6 → V10 | 400 |
+| B–H | B → C → F → E → H | 9 |
 
-Repository GitHub sudah terhubung ke project Vercel `maze-bfs-studio`. Setiap push ke `main` memicu production deployment. Untuk menghubungkan ulang secara manual:
+Contoh B–H tersedia dalam `contoh/graf_BH.txt`. Untuk V1–V10, ganti simpul akhir di GUI menjadi `V10` atau ubah baris terakhir salinan `graf.txt`.
 
-1. Buka Vercel dan pilih **Add New → Project**.
-2. Impor repository `Maze-BFS-Studio`.
-3. Biarkan root directory pada folder utama repository.
-4. Vercel membaca `vercel.json` dan `requirements.txt`; pilih **Deploy**.
+## Isi paket
 
-### Melalui CLI
+- `MMAIKelompokX.py`: pintu masuk GUI, mode teks, dan benchmark.
+- `shortest_path.py`: parser aman dan implementasi kedua algoritma.
+- `graph_gui.py`: tampilan dan animasi Tkinter.
+- `graf.txt` dan `contoh/graf_BH.txt`: data contoh dosen.
+- `test_shortest_path.py`: uji hasil resmi dan kasus batas.
+- `Laporan_Tugas_1_Shortest_Path.docx` serta `.pdf`: laporan proyek.
+- `presentasi/Presentasi_Tugas_1_Shortest_Path.pptx` dan `presentasi/Naskah_Video_Presentasi.md`: bahan rekaman kelompok.
 
-```powershell
-npx vercel
-npx vercel --prod
-```
-
-Perintah pertama menghubungkan proyek dan membuat preview deployment. Perintah kedua membuat production deployment. Folder `.vercel` bersifat lokal dan sudah diabaikan Git.
-
-## Troubleshooting
-
-- **`python` tidak dikenali:** instal Python dan aktifkan opsi *Add Python to PATH*.
-- **Browser tidak terbuka:** salin alamat yang dicetak terminal ke browser.
-- **Port berubah:** normal; server memilih port kosong setiap dijalankan.
-- **Impor ditolak:** periksa dimensi, nilai sel, koordinat, dan pastikan titik awal bukan dinding.
-- **Test gagal karena Flask:** jalankan `python -m pip install -r requirements.txt`.
-- **Vercel menampilkan 404 API:** pastikan `api/index.py`, `maze.py`, `maze.txt`, dan `vercel.json` ikut ter-push.
-
-## Batas proyek
-
-File `Maze 24.pdf` adalah dokumen soal asli dan dipertahankan tanpa perubahan. Proyek ini belum mencakup laporan, arsip kelompok, maupun pengunggahan ke LMS.
+Video akhir ±10 menit harus memakai kontribusi nyata ketiga anggota. Naskah dan slide disiapkan untuk direkam; berkas video akhir belum ada sampai rekaman anggota tersedia. Tidak ada pengunggahan otomatis ke e-learning USK.
