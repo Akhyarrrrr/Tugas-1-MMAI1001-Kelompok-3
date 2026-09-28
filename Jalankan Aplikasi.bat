@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-python MMAIKelompokX.py
+python MMAIKelompok3.py
 if errorlevel 1 pause

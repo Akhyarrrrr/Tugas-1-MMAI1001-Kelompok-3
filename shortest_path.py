@@ -59,9 +59,7 @@ def parse_graph_text(text: str) -> GraphInput:
         lines.pop()
     if len(lines) < 2:
         raise ValueError("graf.txt harus berisi dictionary dan baris simpul awal akhir")
-    endpoints = lines[-1].split()
-    if len(endpoints) != 2:
-        raise ValueError("baris terakhir harus berisi dua simpul dipisahkan spasi")
+    endpoint_line = lines[-1].strip()
     source = "\n".join(lines[:-1]).strip()
     try:
         module = ast.parse(source, mode="exec")
@@ -100,6 +98,14 @@ def parse_graph_text(text: str) -> GraphInput:
             if isinstance(weight, float) and not math.isfinite(weight):
                 raise ValueError(f"bobot {vertex} ke {neighbor} harus terhingga")
             graph[vertex][neighbor] = weight
+    endpoints = endpoint_line.split()
+    if (len(endpoints) == 1 and len(endpoint_line) == 2
+            and endpoint_line not in graph
+            and all(vertex in graph for vertex in endpoint_line)):
+        # Contoh B-H pada soal menulis "BH" tanpa spasi.
+        endpoints = list(endpoint_line)
+    if len(endpoints) != 2:
+        raise ValueError("baris terakhir harus berisi dua simpul dipisahkan spasi")
     start, goal = endpoints
     if start not in graph or goal not in graph:
         raise ValueError("simpul awal dan akhir harus ada dalam graf")
@@ -109,7 +115,7 @@ def parse_graph_text(text: str) -> GraphInput:
 def read_graph(path: str | Path) -> GraphInput:
     try:
         return parse_graph_text(Path(path).read_text(encoding="utf-8"))
-    except OSError as exc:
+    except (OSError, UnicodeError) as exc:
         raise ValueError(f"file graf tidak dapat dibaca: {path}") from exc
 
 

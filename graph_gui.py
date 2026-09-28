@@ -21,16 +21,18 @@ from shortest_path import (
 )
 
 
-BG = "#f1f5f9"
+BG = "#f4f7f6"
 PANEL = "#ffffff"
-INK = "#10243a"
-MUTED = "#526477"
-CANVAS = "#102033"
-EDGE = "#4d6379"
-CYAN = "#38bdf8"
-AMBER = "#fbbf24"
-GREEN = "#63d7ae"
-RED = "#fb7185"
+INK = "#18313b"
+MUTED = "#5b7078"
+CANVAS = "#fbfcfb"
+EDGE = "#a0b1b7"
+CYAN = "#c88744"
+AMBER = "#1d7388"
+GREEN = "#25846e"
+RED = "#be6c59"
+ACTIVE = "#f2d5b6"
+BORDER = "#dce5e5"
 
 
 def layout_graph(graph: Graph) -> dict[str, tuple[float, float]]:
@@ -124,7 +126,7 @@ class GraphStudio:
         self.algorithm_var = tk.StringVar(value="Dijkstra")
         self.speed_var = tk.StringVar(value="Sedang")
         self.progress_var = tk.DoubleVar(value=0)
-        self.status_var = tk.StringVar(value="Muat graf lalu pilih Jalankan kedua algoritma.")
+        self.status_var = tk.StringVar(value="Muat graf lalu pilih Hitung jalur.")
         self.file_var = tk.StringVar(value=file_path.name)
         self.step_var = tk.StringVar(value="0/0")
         self.detail_var = tk.StringVar(value="Graf siap dianalisis.")
@@ -134,49 +136,90 @@ class GraphStudio:
 
     def _build(self) -> None:
         root = self.root
-        root.title("Shortest Path Studio | Tugas 1 MMAI1001")
-        root.geometry("1320x820")
-        root.minsize(960, 650)
+        root.title("Jalur Terpendek | MMAI1001 Kelompok 3")
+        root.geometry("1280x800")
+        root.minsize(900, 650)
         root.configure(bg=BG)
+
         style = ttk.Style(root)
         style.theme_use("clam")
-        style.configure("TFrame", background=BG)
-        style.configure("Panel.TFrame", background=PANEL)
-        style.configure("TLabel", background=BG, foreground=INK, font=("Segoe UI", 10))
-        style.configure("Muted.TLabel", background=BG, foreground=MUTED, font=("Segoe UI", 9))
-        style.configure("Panel.TLabel", background=PANEL, foreground=INK, font=("Segoe UI", 10))
-        style.configure("Title.TLabel", background=BG, foreground=INK, font=("Segoe UI", 21, "bold"))
-        style.configure("TButton", font=("Segoe UI", 10), padding=(12, 7))
-        style.configure("Accent.TButton", background=INK, foreground="white", font=("Segoe UI", 10, "bold"))
-        style.map("Accent.TButton", background=[("active", "#284865")])
-        style.configure("TCombobox", padding=5)
+        style.configure("TCombobox", padding=5, fieldbackground=PANEL, background=PANEL)
+        style.configure("TScale", background=PANEL)
 
-        outer = ttk.Frame(root, padding=18)
+        outer = tk.Frame(root, bg=BG, padx=18, pady=15)
         outer.pack(fill="both", expand=True)
-        heading = ttk.Frame(outer)
-        heading.pack(fill="x", pady=(0, 14))
-        ttk.Label(heading, text="Shortest Path Studio", style="Title.TLabel").pack(side="left")
-        ttk.Label(heading, text="MMAI1001  /  TUGAS 1  /  KELOMPOK X",
-                  style="Muted.TLabel").pack(side="right", pady=(9, 0))
 
-        toolbar = ttk.Frame(outer)
-        toolbar.pack(fill="x", pady=(0, 12))
-        ttk.Button(toolbar, text="Buka graf.txt", command=self.open_file).pack(side="left")
-        ttk.Label(toolbar, textvariable=self.file_var, style="Muted.TLabel").pack(side="left", padx=(9, 18))
-        ttk.Label(toolbar, text="Awal").pack(side="left", padx=(0, 5))
-        self.start_box = ttk.Combobox(toolbar, textvariable=self.start_var, width=8, state="readonly")
-        self.start_box.pack(side="left", padx=(0, 12))
-        ttk.Label(toolbar, text="Akhir").pack(side="left", padx=(0, 5))
-        self.goal_box = ttk.Combobox(toolbar, textvariable=self.goal_var, width=8, state="readonly")
-        self.goal_box.pack(side="left", padx=(0, 12))
-        ttk.Button(toolbar, text="Jalankan kedua algoritma", style="Accent.TButton",
-                   command=self.run_analysis).pack(side="left")
+        heading = tk.Frame(outer, bg=BG)
+        heading.pack(fill="x", pady=(0, 13))
+        tk.Label(heading, text="Jalur Terpendek", bg=BG, fg=INK,
+                 font=("Segoe UI", 21, "bold")).pack(side="left")
+        tk.Label(heading, text="MMAI1001  ·  Tugas 1  ·  Kelompok 3", bg=BG, fg=MUTED,
+                 font=("Segoe UI", 9)).pack(side="right", pady=(10, 0))
+
+        toolbar = tk.Frame(outer, bg=PANEL, highlightthickness=1,
+                           highlightbackground=BORDER, padx=14, pady=11)
+        toolbar.pack(fill="x", pady=(0, 11))
+        tk.Button(toolbar, text="Buka file graf", command=self.open_file, bg="#eef3f3",
+                  fg=INK, activebackground="#e1ebeb", relief="flat", bd=0,
+                  font=("Segoe UI", 9), padx=12, pady=6, cursor="hand2").pack(side="left")
+        tk.Label(toolbar, textvariable=self.file_var, bg=PANEL, fg=MUTED,
+                 font=("Segoe UI", 9)).pack(side="left", padx=(12, 22))
+        tk.Label(toolbar, text="Awal", bg=PANEL, fg=MUTED,
+                 font=("Segoe UI", 9)).pack(side="left", padx=(0, 6))
+        self.start_box = ttk.Combobox(toolbar, textvariable=self.start_var, width=8,
+                                      state="readonly")
+        self.start_box.pack(side="left", padx=(0, 17))
+        tk.Label(toolbar, text="Tujuan", bg=PANEL, fg=MUTED,
+                 font=("Segoe UI", 9)).pack(side="left", padx=(0, 6))
+        self.goal_box = ttk.Combobox(toolbar, textvariable=self.goal_var, width=8,
+                                     state="readonly")
+        self.goal_box.pack(side="left", padx=(0, 17))
+        tk.Button(toolbar, text="Hitung jalur", command=self.run_analysis,
+                  bg=AMBER, fg="white", activebackground="#155b6d",
+                  activeforeground="white", relief="flat", bd=0,
+                  font=("Segoe UI", 9, "bold"), padx=15, pady=6,
+                  cursor="hand2").pack(side="left")
+
+        tk.Label(outer, textvariable=self.status_var, bg=BG, fg=MUTED,
+                 font=("Segoe UI", 9), anchor="w").pack(side="bottom", fill="x", pady=(8, 0))
+
+        transport = tk.Frame(outer, bg=PANEL, highlightthickness=1,
+                             highlightbackground=BORDER, padx=11, pady=9)
+        transport.pack(side="bottom", fill="x", pady=(10, 0))
+        def control(text: str, command, *, primary: bool = False) -> tk.Button:
+            return tk.Button(transport, text=text, command=command,
+                             bg=AMBER if primary else "#eef3f3",
+                             fg="white" if primary else INK,
+                             activebackground="#155b6d" if primary else "#e1ebeb",
+                             activeforeground="white" if primary else INK,
+                             relief="flat", bd=0, font=("Segoe UI", 9, "bold") if primary
+                             else ("Segoe UI", 9), padx=11, pady=6, cursor="hand2")
+        control("Ke awal", self.reset).pack(side="left", padx=(0, 6))
+        control("Mundur", lambda: self.step_by(-1)).pack(side="left", padx=6)
+        self.play_button = control("Putar", self.play_pause, primary=True)
+        self.play_button.pack(side="left", padx=6)
+        control("Maju", lambda: self.step_by(1)).pack(side="left", padx=6)
+        self.progress = ttk.Scale(transport, from_=0, to=1, variable=self.progress_var,
+                                  command=self._on_progress)
+        self.progress.pack(side="left", fill="x", expand=True, padx=(18, 12))
+        tk.Label(transport, textvariable=self.step_var, bg=PANEL, fg=INK,
+                 font=("Segoe UI", 9)).pack(side="left")
+        tk.Label(transport, text="Kecepatan", bg=PANEL, fg=MUTED,
+                 font=("Segoe UI", 9)).pack(side="left", padx=(17, 6))
+        ttk.Combobox(transport, textvariable=self.speed_var,
+                     values=("Lambat", "Sedang", "Cepat"), state="readonly",
+                     width=8).pack(side="left")
 
         workspace = ttk.PanedWindow(outer, orient="horizontal")
-        graph_frame = ttk.Frame(workspace)
-        right = ttk.Frame(workspace, style="Panel.TFrame", padding=16)
-        workspace.add(graph_frame, weight=4)
-        workspace.add(right, weight=1)
+        workspace.pack(fill="both", expand=True)
+        graph_frame = tk.Frame(workspace, bg=PANEL, highlightthickness=1,
+                               highlightbackground=BORDER)
+        graph_heading = tk.Frame(graph_frame, bg=PANEL, padx=13, pady=10)
+        graph_heading.pack(fill="x")
+        tk.Label(graph_heading, text="Graf berbobot", bg=PANEL, fg=INK,
+                 font=("Segoe UI", 11, "bold")).pack(side="left")
+        tk.Label(graph_heading, text="Seret simpul untuk mengatur posisi", bg=PANEL,
+                 fg=MUTED, font=("Segoe UI", 8)).pack(side="right", pady=(3, 0))
         self.canvas = tk.Canvas(graph_frame, bg=CANVAS, highlightthickness=0, bd=0,
                                 cursor="hand2")
         self.canvas.pack(fill="both", expand=True)
@@ -185,57 +228,86 @@ class GraphStudio:
         self.canvas.bind("<B1-Motion>", self._drag_move)
         self.canvas.bind("<ButtonRelease-1>", self._drag_end)
 
-        ttk.Label(right, text="PERBANDINGAN", style="Panel.TLabel",
-                  font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(0, 12))
-        self.dijkstra_label = tk.Label(right, bg=PANEL, fg=INK, font=("Segoe UI", 10),
-                                       justify="left", anchor="nw", wraplength=300)
-        self.dijkstra_label.pack(fill="x", pady=(0, 12))
-        ttk.Separator(right).pack(fill="x", pady=(0, 12))
-        self.bellman_label = tk.Label(right, bg=PANEL, fg=INK, font=("Segoe UI", 10),
-                                     justify="left", anchor="nw", wraplength=300)
-        self.bellman_label.pack(fill="x", pady=(0, 14))
-        ttk.Separator(right).pack(fill="x", pady=(0, 14))
-        ttk.Label(right, text="PROSES YANG DITAMPILKAN", style="Panel.TLabel",
-                  font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(0, 8))
+        results_host = tk.Frame(workspace, bg=PANEL, width=335,
+                                highlightthickness=1, highlightbackground=BORDER)
+        results_host.pack_propagate(False)
+        result_canvas = tk.Canvas(results_host, bg=PANEL, highlightthickness=0, bd=0)
+        result_scroll = ttk.Scrollbar(results_host, orient="vertical",
+                                      command=result_canvas.yview)
+        result_canvas.configure(yscrollcommand=result_scroll.set)
+        result_scroll.pack(side="right", fill="y")
+        result_canvas.pack(side="left", fill="both", expand=True)
+        right = tk.Frame(result_canvas, bg=PANEL, padx=12, pady=12)
+        content = result_canvas.create_window((0, 0), window=right, anchor="nw")
+        right.bind("<Configure>", lambda _event: result_canvas.configure(
+            scrollregion=result_canvas.bbox("all")))
+        result_canvas.bind("<Configure>", lambda event: result_canvas.itemconfigure(
+            content, width=event.width))
+        workspace.add(graph_frame, weight=4)
+        workspace.add(results_host, weight=1)
+
+        tk.Label(right, text="Perbandingan hasil", bg=PANEL, fg=INK,
+                 font=("Segoe UI", 13, "bold")).pack(anchor="w")
+        tk.Label(right, text="Jalur, bobot minimum, dan waktu hitung", bg=PANEL,
+                 fg=MUTED, font=("Segoe UI", 9)).pack(anchor="w", pady=(2, 8))
+        self.result_widgets = {}
+        for name in ("Dijkstra", "Bellman-Ford"):
+            card = tk.Frame(right, bg=PANEL, highlightthickness=1,
+                            highlightbackground=BORDER, padx=11, pady=10)
+            card.pack(fill="x", pady=(0, 8))
+            top = tk.Frame(card, bg=PANEL)
+            top.pack(fill="x")
+            tk.Label(top, text=name, bg=PANEL, fg=INK,
+                     font=("Segoe UI", 10, "bold")).pack(side="left", anchor="n")
+            cost_box = tk.Frame(top, bg=PANEL)
+            cost_box.pack(side="right")
+            cost = tk.Label(cost_box, bg=PANEL, fg=AMBER,
+                            font=("Segoe UI", 21, "bold"))
+            cost.pack(anchor="e")
+            tk.Label(cost_box, text="bobot minimum", bg=PANEL, fg=MUTED,
+                     font=("Segoe UI", 8)).pack(anchor="e")
+            route = tk.Label(card, bg=PANEL, fg=INK, justify="left", anchor="w",
+                             font=("Segoe UI", 9))
+            route.pack(fill="x", pady=(9, 6))
+            timing = tk.Label(card, bg=PANEL, fg=MUTED, anchor="w",
+                              font=("Segoe UI", 9))
+            timing.pack(fill="x")
+            meta = tk.Label(card, bg=PANEL, fg=MUTED, anchor="w",
+                            font=("Segoe UI", 8))
+            meta.pack(fill="x", pady=(3, 0))
+            self.result_widgets[name] = (cost, route, timing, meta)
+
+        tk.Frame(right, bg=BORDER, height=1).pack(fill="x", pady=(7, 13))
+        tk.Label(right, text="Langkah pencarian", bg=PANEL, fg=INK,
+                 font=("Segoe UI", 11, "bold")).pack(anchor="w", pady=(0, 7))
         self.algorithm_box = ttk.Combobox(right, textvariable=self.algorithm_var,
                                           values=("Dijkstra", "Bellman-Ford"),
                                           state="readonly")
         self.algorithm_box.pack(fill="x")
         self.algorithm_box.bind("<<ComboboxSelected>>", lambda _event: self.select_algorithm())
-        self.detail_label = tk.Label(right, textvariable=self.detail_var, bg=PANEL, fg=MUTED,
-                                     font=("Segoe UI", 10), justify="left", anchor="nw",
-                                     wraplength=300, height=4)
-        self.detail_label.pack(fill="x", pady=(12, 12))
-        ttk.Label(right, text="WARNA PROSES", style="Panel.TLabel",
-                  font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(4, 6))
-        for color, meaning in ((GREEN, "Simpul awal"), (RED, "Simpul tujuan"),
-                               (CYAN, "Sisi yang direlaksasi"), (AMBER, "Jalur terpendek")):
+        self.detail_label = tk.Label(right, textvariable=self.detail_var,
+                                     bg="#ecf5f5", fg=INK, justify="left", anchor="nw",
+                                     font=("Segoe UI", 9), padx=10, pady=9,
+                                     wraplength=280)
+        self.detail_label.pack(fill="x", pady=(10, 15))
+        tk.Label(right, text="Keterangan", bg=PANEL, fg=INK,
+                 font=("Segoe UI", 10, "bold")).pack(anchor="w", pady=(0, 7))
+        for color, meaning in ((GREEN, "Titik awal"), (RED, "Titik tujuan"),
+                               (CYAN, "Sisi yang diperiksa"), (AMBER, "Jalur terbaik")):
             row = tk.Frame(right, bg=PANEL)
-            row.pack(fill="x", pady=3)
-            tk.Label(row, text="●", fg=color, bg=PANEL, font=("Segoe UI", 15)).pack(side="left")
+            row.pack(fill="x", pady=2)
+            tk.Label(row, text="●", fg=color, bg=PANEL,
+                     font=("Segoe UI", 13)).pack(side="left")
             tk.Label(row, text=meaning, fg=MUTED, bg=PANEL,
-                     font=("Segoe UI", 9)).pack(side="left", padx=5)
-        tk.Label(right, text="Seret simpul untuk merapikan tampilan.", bg=PANEL, fg=MUTED,
-                 font=("Segoe UI", 9), wraplength=300, justify="left").pack(anchor="w", pady=(18, 0))
+                     font=("Segoe UI", 9)).pack(side="left", padx=6)
 
-        transport = ttk.Frame(outer)
-        transport.pack(side="bottom", fill="x", pady=(12, 0))
-        ttk.Button(transport, text="Awal", command=self.reset).pack(side="left", padx=(0, 5))
-        ttk.Button(transport, text="Langkah -", command=lambda: self.step_by(-1)).pack(side="left", padx=5)
-        self.play_button = ttk.Button(transport, text="Putar", style="Accent.TButton",
-                                      command=self.play_pause)
-        self.play_button.pack(side="left", padx=5)
-        ttk.Button(transport, text="Langkah +", command=lambda: self.step_by(1)).pack(side="left", padx=5)
-        self.progress = ttk.Scale(transport, from_=0, to=1, variable=self.progress_var,
-                                  command=self._on_progress)
-        self.progress.pack(side="left", fill="x", expand=True, padx=15)
-        ttk.Label(transport, textvariable=self.step_var).pack(side="left")
-        ttk.Label(transport, text="Kecepatan").pack(side="left", padx=(15, 5))
-        ttk.Combobox(transport, textvariable=self.speed_var, values=("Lambat", "Sedang", "Cepat"),
-                     state="readonly", width=8).pack(side="left")
-        ttk.Label(outer, textvariable=self.status_var, style="Muted.TLabel").pack(
-            side="bottom", fill="x", pady=(9, 0))
-        workspace.pack(fill="both", expand=True)
+        def resize_results(event: tk.Event) -> None:
+            width = max(180, event.width - 36)
+            for _cost, route, _timing, _meta in self.result_widgets.values():
+                route.configure(wraplength=width)
+            self.detail_label.configure(wraplength=width - 12)
+        right.bind("<Configure>", resize_results, add="+")
+
         root.bind("<space>", self._space)
         root.bind("<Left>", self._left)
         root.bind("<Right>", self._right)
@@ -285,20 +357,24 @@ class GraphStudio:
             self.algorithm_var.set(next(iter(self.results)))
         self.select_algorithm()
         self.status_var.set(f"{len(graph)} simpul, {sum(map(len, graph.values()))} sisi berarah. "
-                            "Runtime tidak memasukkan animasi.")
+                            "Waktu hitung tidak termasuk animasi.")
 
     def _update_results(self) -> None:
-        def summary(name: str) -> str:
+        for name, widgets in self.result_widgets.items():
+            cost_label, route_label, time_label, meta_label = widgets
             if name in self.errors:
-                return f"{name}\n{self.errors[name]}"
+                cost_label.configure(text="—")
+                route_label.configure(text=self.errors[name])
+                time_label.configure(text="")
+                meta_label.configure(text="")
+                continue
             result = self.results[name]
-            path = "  →  ".join(result.path) if result.path else "Tidak ada jalur"
-            cost = f"{result.cost:g}" if result.cost is not None else "—"
-            return (f"{name}\nJalur: {path}\nBobot minimum: {cost}\n"
-                    f"Runtime: {result.elapsed_ns / 1000:.2f} mikrodetik\n"
-                    f"Simpul diperiksa: {result.examined}  ·  Relaksasi: {result.relaxations}")
-        self.dijkstra_label.configure(text=summary("Dijkstra"))
-        self.bellman_label.configure(text=summary("Bellman-Ford"))
+            path = " → ".join(result.path) if result.path else "Tidak ada jalur"
+            cost_label.configure(text=f"{result.cost:g}" if result.cost is not None else "—")
+            route_label.configure(text=f"Jalur: {path}")
+            time_label.configure(text=f"Waktu hitung: {result.elapsed_ns / 1000:.2f} µs")
+            meta_label.configure(text=f"{result.examined} simpul diperiksa · "
+                                      f"{result.relaxations} relaksasi")
 
     def select_algorithm(self) -> None:
         self.pause()
@@ -357,38 +433,38 @@ class GraphStudio:
                                (paired and (target, source) in path_edges))
                 active = active_edge == (source, target) or (paired and active_edge == (target, source))
                 color = AMBER if highlighted else CYAN if active else EDGE
-                canvas.create_line(x1 + nx * 23 + px, y1 + ny * 23 + py,
-                                   x2 - nx * 23 + px, y2 - ny * 23 + py,
-                                   fill=color, width=4 if highlighted else 3 if active else 1.7,
+                canvas.create_line(x1 + nx * 22 + px, y1 + ny * 22 + py,
+                                   x2 - nx * 22 + px, y2 - ny * 22 + py,
+                                   fill=color, width=3.5 if highlighted else 2.8 if active else 1.6,
                                    arrow=tk.BOTH if paired else tk.LAST, arrowshape=(8, 9, 4))
                 mx, my = (x1 + x2) / 2 + px - ny * 11, (y1 + y2) / 2 + py + nx * 11
                 label = f"{weight:g}"
                 half = max(13, len(label) * 3.6 + 5)
                 canvas.create_rectangle(mx - half, my - 10, mx + half, my + 10,
                                         fill=CANVAS, outline="")
-                canvas.create_text(mx, my, text=label, fill="#d5e3f0",
-                                   font=("Consolas", 9, "bold"))
+                canvas.create_text(mx, my, text=label, fill=INK,
+                                   font=("Segoe UI", 9, "bold"))
 
         start, goal = self.start_var.get(), self.goal_var.get()
         visited = step.visited if step else frozenset()
         frontier = step.frontier if step else frozenset()
         for vertex in sorted(graph):
             x, y = xy[vertex]
-            fill = "#213852"
+            fill = PANEL
             if vertex in visited:
-                fill = "#316180"
+                fill = "#e8f0f2"
             if vertex in frontier:
-                fill = "#0d7495"
+                fill = "#dcebef"
             if step and vertex == step.current:
-                fill = "#e06153"
+                fill = ACTIVE
             if final and result and vertex in result.path:
-                fill = "#b77d16"
-            outline = GREEN if vertex == start else RED if vertex == goal else "#89a5bf"
+                fill = "#dceff1"
+            outline = GREEN if vertex == start else RED if vertex == goal else "#88a0a8"
             if vertex == start and vertex == goal:
                 outline = AMBER
-            canvas.create_oval(x - 22, y - 22, x + 22, y + 22, fill=fill,
-                               outline=outline, width=3 if vertex in (start, goal) else 1.5)
-            canvas.create_text(x, y, text=vertex, fill="white",
+            canvas.create_oval(x - 20, y - 20, x + 20, y + 20, fill=fill,
+                               outline=outline, width=2.5 if vertex in (start, goal) else 1.5)
+            canvas.create_text(x, y, text=vertex, fill=INK,
                                font=("Segoe UI", 10, "bold"))
             if vertex == start:
                 canvas.create_text(x, y - 32, text="AWAL", fill=GREEN,
@@ -404,7 +480,7 @@ class GraphStudio:
         if step:
             self.detail_var.set(step.description)
         elif final and result:
-            self.detail_var.set("Jalur minimum ditandai kuning. Tekan Putar untuk melihat proses pencarian.")
+            self.detail_var.set("Jalur terbaik ditandai biru. Tekan Putar untuk melihat proses pencarian.")
         elif self.algorithm_var.get() in self.errors:
             self.detail_var.set(self.errors[self.algorithm_var.get()])
         else:
@@ -496,6 +572,9 @@ class GraphStudio:
 
 
 def launch(source: GraphInput, file_path: Path) -> None:
-    root = tk.Tk()
-    GraphStudio(root, source, file_path)
-    root.mainloop()
+    try:
+        root = tk.Tk()
+        GraphStudio(root, source, file_path)
+        root.mainloop()
+    except tk.TclError as exc:
+        raise RuntimeError(f"Tkinter tidak dapat membuat jendela: {exc}") from exc

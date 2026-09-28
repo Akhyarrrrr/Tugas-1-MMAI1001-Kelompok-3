@@ -1,6 +1,7 @@
 """Cek yang dapat dijalankan tanpa membuka GUI: python -m unittest -v."""
 
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
 from shortest_path import (
@@ -43,6 +44,21 @@ class ShortestPathTest(unittest.TestCase):
         B H
         """)
         self.assert_both(source.graph, source.start, source.goal, 9)
+
+    def test_compact_bh_from_assignment(self):
+        original = (ROOT / "contoh" / "graf_BH.txt").read_text(encoding="utf-8")
+        source = parse_graph_text(original.replace("\nB H", "\nBH"))
+        self.assertEqual((source.start, source.goal), ("B", "H"))
+        ambiguous = "graph = {'B': {}, 'H': {}, 'BH': {}}\nBH"
+        with self.assertRaises(ValueError):
+            parse_graph_text(ambiguous)
+
+    def test_rejects_unreadable_encoding(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "graf.txt"
+            path.write_bytes(b"\xff\xfe")
+            with self.assertRaisesRegex(ValueError, "tidak dapat dibaca"):
+                read_graph(path)
 
     def test_unreachable_and_directed_edges(self):
         graph = {"A": {"B": 3}, "B": {}, "C": {"A": 1}}
