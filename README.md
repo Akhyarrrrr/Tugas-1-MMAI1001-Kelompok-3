@@ -43,7 +43,7 @@ graph = {
 A C
 ```
 
-Sisi mengikuti arah yang tertulis. Jika diperlukan arah balik, tulis sisi balik secara terpisah. Setiap simpul tujuan harus memiliki entri dictionary, dan bobot harus berupa angka terhingga. Parser membaca literal sebagai data, bukan menjalankan kode di dalam file. Bentuk `BH` tanpa spasi pada contoh soal diterima hanya jika `B` dan `H` adalah dua simpul satu huruf yang tidak ambigu.
+Sisi mengikuti arah yang tertulis. Jika diperlukan arah balik, tulis sisi balik secara terpisah. Setiap simpul tujuan harus memiliki entri dictionary, dan bobot harus berupa angka terhingga. Tulis setiap simpul sekali dan setiap sisi berarah sekali. Parser membaca literal sebagai data, bukan menjalankan kode di dalam file. Bentuk `BH` tanpa spasi pada contoh soal diterima hanya jika `B` dan `H` adalah dua simpul satu huruf yang tidak ambigu.
 
 Dijkstra berlaku untuk graf dengan bobot nonnegatif. Bila ada sisi negatif, aplikasi menampilkan alasan Dijkstra tidak dijalankan dan tetap mencoba Bellman–Ford. Siklus negatif yang dapat memengaruhi tujuan dilaporkan sebagai jalur minimum yang tidak terdefinisi.
 
@@ -54,7 +54,7 @@ Dijkstra berlaku untuk graf dengan bobot nonnegatif. Bila ada sisi negatif, apli
 3. Pilih algoritma pada **Langkah pencarian**. Gunakan **Putar/Jeda**, **Mundur**, **Maju**, bilah kemajuan, atau **Ke awal**. Simpul pada graf dapat diseret.
 4. Garis biru kehijauan menunjukkan jalur terbaik; hijau menandai awal, merah kecokelatan menandai tujuan, dan jingga menandai sisi yang sedang diperiksa. Panel hasil dapat digulir pada jendela kecil.
 
-Hasil contoh resmi: V1–V15 berbobot **505**, V1–V10 berbobot **400**, dan B–H berbobot **9**. Jalankan pengujian dengan `python -m unittest -v`; sepuluh uji tersedia.
+Hasil contoh resmi: V1–V15 berbobot **505**, V1–V10 berbobot **400**, dan B–H berbobot **9**. Jalankan pengujian dengan `python -m unittest -v`.
 
 ## Berkas yang digunakan
 
