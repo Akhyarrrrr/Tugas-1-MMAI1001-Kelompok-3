@@ -71,11 +71,14 @@ def parse_graph_text(text: str) -> GraphInput:
             or module.body[0].targets[0].id not in {"graph", "graf"}
         ):
             raise ValueError("isi graf harus berupa satu assignment graph = {...} atau graf = {...}")
-        raw = ast.literal_eval(module.body[0].value)
+        literal = module.body[0].value
+        raw = ast.literal_eval(literal)
     except (SyntaxError, TypeError, MemoryError, RecursionError) as exc:
         raise ValueError("struktur dictionary graf tidak valid") from exc
-    if not isinstance(raw, dict) or not raw:
+    if not isinstance(literal, ast.Dict) or not raw:
         raise ValueError("graf harus berupa dictionary yang tidak kosong")
+    if len(literal.keys) != len(raw):
+        raise ValueError("nama simpul tidak boleh ditulis lebih dari sekali")
 
     vertices = set(raw)
     if any(
@@ -86,9 +89,11 @@ def parse_graph_text(text: str) -> GraphInput:
     ):
         raise ValueError("nama simpul harus berupa teks tidak kosong tanpa spasi")
     graph: Graph = {}
-    for vertex, neighbors in raw.items():
-        if not isinstance(neighbors, dict):
+    for (vertex, neighbors), adjacency in zip(raw.items(), literal.values, strict=True):
+        if not isinstance(adjacency, ast.Dict):
             raise ValueError(f"tetangga {vertex} harus berupa dictionary")
+        if len(adjacency.keys) != len(neighbors):
+            raise ValueError(f"sisi dari {vertex} ke simpul yang sama ditulis lebih dari sekali")
         graph[vertex] = {}
         for neighbor, weight in neighbors.items():
             if neighbor not in vertices:

@@ -60,6 +60,15 @@ class ShortestPathTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "tidak dapat dibaca"):
                 read_graph(path)
 
+    def test_rejects_duplicate_graph_entries(self):
+        cases = (
+            ("graph = {'A': {'B': 2}, 'A': {}, 'B': {}}\nA B", "simpul"),
+            ("graph = {'A': {'B': 2, 'B': 9}, 'B': {}}\nA B", "sisi"),
+        )
+        for text, entry in cases:
+            with self.subTest(entry=entry), self.assertRaisesRegex(ValueError, entry):
+                parse_graph_text(text)
+
     def test_unreachable_and_directed_edges(self):
         graph = {"A": {"B": 3}, "B": {}, "C": {"A": 1}}
         for algorithm in (dijkstra, bellman_ford):
